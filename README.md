@@ -1,8 +1,19 @@
-<h2><center>Proc Macro Warning</center></h2>
-<center>As the name says… emits warnings inside a proc macro.</center>
-<br>
+<h1 align="center"><br>
+    Proc Macro Warning
+<br></h1>
+
+<h4 align="center">Emit warnings from inside proc macros.</h4>
+
+<p align="center">
+  <a href="https://www.gnu.org/licenses/gpl-3.0">
+    <img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3">
+  </a>
+  <a href="https://crates.io/crates/proc-macro-warning">
+    <img src="https://img.shields.io/crates/v/proc-macro-warning"/>
+  </a>
+</p>
+
 Rust does not have native functions to produce warnings from inside proc macros. This crate provides "deprecated" warnings for your proc macro use-cases.
-<br>
 
 ## Example
 
@@ -23,7 +34,7 @@ let tokens = quote::quote!(#warning);
 
 ## Used In 
 
-Substrate (not yet, but hopefully soon 😉) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
+Substrate (not yet, but hopefully [soon](https://github.com/paritytech/substrate/pull/13798) 😉) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
 
 For example not putting a `call_index` on your functions produces:
 ```pre
@@ -48,7 +59,7 @@ warning: use of deprecated unit struct `pallet::warnings::ConstantWeight::_w`:
                  Please instead benchmark all calls or put the pallet into `dev` mode.
          
                  For more info see:
-                     <TODO>
+                     <https://github.com/paritytech/substrate/pull/13798>
     --> frame/nomination-pools/src/lib.rs:2620:20
      |
 2620 |         #[pallet::weight(0)]
