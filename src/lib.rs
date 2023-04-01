@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
-/// Creates a compile-time warning for proc macro use.
-///
-/// # Example
+/// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
 pub struct Warning {
 	pub name: String,
 	pub message: String,
