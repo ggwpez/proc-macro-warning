@@ -2,7 +2,7 @@
 <center>As the name says… emits warnings inside a proc macro.</center>
 <br>
 Rust does not have native functions to produce warnings from inside proc macros. This crate provides "deprecated" warnings for your proc macro use-cases.
-<br><br>
+<br>
 
 ## Example
 
@@ -48,7 +48,7 @@ warning: use of deprecated unit struct `pallet::warnings::ConstantWeight::_w`:
                  Please instead benchmark all calls or put the pallet into `dev` mode.
          
                  For more info see:
-                     <FAIL-CI>
+                     <TODO>
     --> frame/nomination-pools/src/lib.rs:2620:20
      |
 2620 |         #[pallet::weight(0)]
