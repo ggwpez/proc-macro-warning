@@ -3,15 +3,19 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 
+//! Emit warnings from inside proc macros.
+
+use proc_macro2::Span;
+
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
 pub struct Warning {
 	pub name: String,
 	pub message: String,
 	pub links: Vec<String>,
-	pub span: proc_macro2::Span,
+	pub span: Span,
 }
 
-/// Gradually build a deprecated `Warning` struct.
+/// Gradually build a "deprecated" `Warning`.
 ///
 /// # Example
 /// ```
@@ -33,12 +37,15 @@ pub struct DeprecatedWarningBuilder {
 	deprecated: Option<String>,
 	alternative: Option<String>,
 	links: Vec<String>,
-	span: Option<proc_macro2::Span>,
+	span: Option<Span>,
 }
 
 impl DeprecatedWarningBuilder {
+	/// Create a new *deprecated* warning builder with the given title.
+	///
+	/// The title must be unique for each warning.
 	#[must_use]
-	pub fn new(title: &str) -> DeprecatedWarningBuilder {
+	pub fn from_title(title: &str) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { title: title.into(), ..Default::default() }
 	}
 
@@ -72,41 +79,43 @@ impl DeprecatedWarningBuilder {
 
 	/// The span of the warning.
 	#[must_use]
-	pub fn span(self, span: proc_macro2::Span) -> DeprecatedWarningBuilder {
+	pub fn span(self, span: Span) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { span: Some(span), ..self }
 	}
 
 	/// Build the warning.
 	#[must_use]
-	pub fn build(self) -> Warning {
-		let span = self.span.unwrap_or_else(proc_macro2::Span::call_site);
+	pub fn maybe_build(self) -> Result<Warning, String> {
+		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
-		let deprecated = self.deprecated.expect("Must provide a deprecated message");
-		let alternative = self.alternative.expect("Must provide an alternative message");
+		let deprecated = self.deprecated.ok_or("Missing deprecated")?;
+		let alternative = self.alternative.ok_or("Missing alternative")?;
 		let message =
 			format!("It is deprecated to {}.\nPlease instead {}.", deprecated, alternative);
 
-		Warning { name: title, message, links: self.links, span }
+		Ok(Warning { name: title, message, links: self.links, span })
+	}
+
+	/// Unwraps [`maybe_build`] for convenience.
+	#[must_use]
+	pub fn build(self) -> Warning {
+		self.maybe_build().expect("maybe_build failed")
 	}
 }
 
 impl Warning {
 	/// Create a new *raw* warnings.
-	pub fn new_raw(
-		name: String,
-		message: String,
-		help_links: Vec<String>,
-		span: proc_macro2::Span,
-	) -> Warning {
+	pub fn new_raw(name: String, message: String, help_links: Vec<String>, span: Span) -> Warning {
 		Warning { name, message, links: help_links, span }
 	}
 
 	/// Create a new *deprecated* warning.
 	#[must_use]
 	pub fn new_deprecated(title: &str) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { title: title.into(), ..Default::default() }
+		DeprecatedWarningBuilder::from_title(title)
 	}
 
+	/// Sanitize the warning message.
 	fn final_message(&self) -> String {
 		let lines = self.message.trim().lines().map(|line| line.trim_start());
 		// Prepend two tabs to each line
@@ -125,6 +134,7 @@ impl Warning {
 		}
 	}
 
+	/// Sanitize the warning name.
 	fn final_name(&self) -> syn::Ident {
 		syn::Ident::new(&self.name, self.span)
 	}
