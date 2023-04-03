@@ -65,3 +65,8 @@ warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
 2620 |         #[pallet::weight(0)]
      |                          
 ```
+
+
+## Follow Ups
+
+- [ ] Use [typesafe-builders](https://github.com/ggwpez/typesafe-builders) to make the `Warning` builder infallible.
