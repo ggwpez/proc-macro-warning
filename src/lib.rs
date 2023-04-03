@@ -156,13 +156,16 @@ impl Warning {
 				.join("\n\t\t\t");
 			format!("\n{}\n\n\t\tFor more info see:\n\t\t\t{}", message, link)
 		} else {
-			message
+			format!("\n{}", message)
 		}
 	}
 
 	/// Sanitize the warning name.
 	fn final_name(&self) -> syn::Ident {
-		let name = format!("{}_{}", self.name, self.index.unwrap_or_default());
+		let name = match self.index {
+			Some(i) => format!("{}_{}", self.name, i),
+			None => self.name.clone(),
+		};
 		syn::Ident::new(&name, self.span)
 	}
 }
