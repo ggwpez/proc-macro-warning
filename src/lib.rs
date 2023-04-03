@@ -10,6 +10,7 @@ use proc_macro2::Span;
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
 pub struct Warning {
 	pub name: String,
+	pub index: Option<usize>,
 	pub message: String,
 	pub links: Vec<String>,
 	pub span: Span,
@@ -30,10 +31,21 @@ pub struct Warning {
 ///
 /// // Use the warning in a proc macro
 /// let tokens = quote::quote!(#warning);
+///
+/// let warnings = vec![warning];
+/// // In a proc macro you would expand them inside a module:
+/// quote::quote! {
+/// 	mod warnings {
+/// 			#(
+/// 				#warnings
+/// 			)*
+/// 		}
+/// };
 /// ```
 #[derive(Default)]
 pub struct DeprecatedWarningBuilder {
 	title: String,
+	index: Option<usize>,
 	deprecated: Option<String>,
 	alternative: Option<String>,
 	links: Vec<String>,
@@ -47,6 +59,14 @@ impl DeprecatedWarningBuilder {
 	#[must_use]
 	pub fn from_title(title: &str) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { title: title.into(), ..Default::default() }
+	}
+
+	/// Set an optional index in case that a warning appears multiple times.
+	///
+	/// Must be set if a warning appears multiple times.
+	#[must_use]
+	pub fn index(self, index: usize) -> DeprecatedWarningBuilder {
+		DeprecatedWarningBuilder { index: Some(index), ..self }
 	}
 
 	/// The old *deprecated* way of doing something.
@@ -93,7 +113,7 @@ impl DeprecatedWarningBuilder {
 		let message =
 			format!("It is deprecated to {}.\nPlease instead {}.", deprecated, alternative);
 
-		Ok(Warning { name: title, message, links: self.links, span })
+		Ok(Warning { name: title, index: self.index, message, links: self.links, span })
 	}
 
 	/// Unwraps [`maybe_build`] for convenience.
@@ -105,8 +125,14 @@ impl DeprecatedWarningBuilder {
 
 impl Warning {
 	/// Create a new *raw* warnings.
-	pub fn new_raw(name: String, message: String, help_links: Vec<String>, span: Span) -> Warning {
-		Warning { name, message, links: help_links, span }
+	pub fn new_raw(
+		name: String,
+		index: Option<usize>,
+		message: String,
+		help_links: Vec<String>,
+		span: Span,
+	) -> Warning {
+		Warning { name, index, message, links: help_links, span }
 	}
 
 	/// Create a new *deprecated* warning.
@@ -136,7 +162,8 @@ impl Warning {
 
 	/// Sanitize the warning name.
 	fn final_name(&self) -> syn::Ident {
-		syn::Ident::new(&self.name, self.span)
+		let name = format!("{}_{}", self.name, self.index.unwrap_or_default());
+		syn::Ident::new(&name, self.span)
 	}
 }
 
