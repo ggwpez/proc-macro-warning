@@ -24,7 +24,7 @@ pub struct Warning {
 ///
 /// let warning = Warning::new_deprecated("my_macro")
 /// 	.old("my_macro()")
-/// 	.alternative("my_macro::new()")
+/// 	.new("my_macro::new()")
 /// 	.help_link("https:://example.com")
 /// 	.span(proc_macro2::Span::call_site())
 /// 	.build();
@@ -46,8 +46,8 @@ pub struct Warning {
 pub struct DeprecatedWarningBuilder {
 	title: String,
 	index: Option<usize>,
-	deprecated: Option<String>,
-	alternative: Option<String>,
+	old: Option<String>,
+	new: Option<String>,
 	links: Vec<String>,
 	span: Option<Span>,
 }
@@ -73,16 +73,16 @@ impl DeprecatedWarningBuilder {
 	///
 	/// Should complete the sentence "It is deprecated to ...".
 	#[must_use]
-	pub fn old(self, deprecated: &str) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { deprecated: Some(deprecated.into()), ..self }
+	pub fn old(self, old: &str) -> DeprecatedWarningBuilder {
+		DeprecatedWarningBuilder { old: Some(old.into()), ..self }
 	}
 
-	/// The new *alternative* way of doing something.
+	/// The *new* way of doing something.
 	///
 	/// Should complete the sentence "Please instead ...".
 	#[must_use]
-	pub fn alternative(self, alternative: &str) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { alternative: Some(alternative.into()), ..self }
+	pub fn new(self, new: &str) -> DeprecatedWarningBuilder {
+		DeprecatedWarningBuilder { new: Some(new.into()), ..self }
 	}
 
 	/// A help link for the user to explain the transition and justification.
@@ -108,10 +108,9 @@ impl DeprecatedWarningBuilder {
 	pub fn maybe_build(self) -> Result<Warning, String> {
 		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
-		let deprecated = self.deprecated.ok_or("Missing deprecated")?;
-		let alternative = self.alternative.ok_or("Missing alternative")?;
-		let message =
-			format!("It is deprecated to {}.\nPlease instead {}.", deprecated, alternative);
+		let old = self.old.ok_or("Missing old")?;
+		let new = self.new.ok_or("Missing new")?;
+		let message = format!("It is deprecated to {}.\nPlease instead {}.", old, new);
 
 		Ok(Warning { name: title, index: self.index, message, links: self.links, span })
 	}
@@ -176,12 +175,16 @@ impl quote::ToTokens for Warning {
 		let message = self.final_message();
 
 		let q = quote::quote_spanned!(self.span =>
+			/// This function should not be called and and only exists to emit a compiler warning.
+			///
+			/// It is a No-OP if you want try it anyway ;)
 			#[allow(dead_code)]
 			#[allow(non_camel_case_types)]
 			#[allow(non_snake_case)]
 			fn #name() {
 				#[deprecated(note = #message)]
-				struct _w;
+				#[allow(non_upper_case_globals)]
+				const _w: () = ();
 				let _ = _w;
 			}
 		);

@@ -23,7 +23,7 @@ Building a warning is easy with the builder pattern.
 use proc_macro_warning::Warning;
 let warning = Warning::new_deprecated("my_macro")
 	.old("my_macro()")
-	.alternative("my_macro::new()")
+	.new("my_macro::new()")
 	.help_link("https:://example.com")
 	.span(proc_macro2::Span::call_site())
 	.build();
@@ -38,7 +38,7 @@ Substrate (not yet, but hopefully [soon](https://github.com/paritytech/substrate
 
 For example not putting a `call_index` on your functions produces:
 ```pre
-warning: use of deprecated unit struct `pallet::warnings::ImplicitCallIndex::_w`: 
+warning: use of deprecated constant `pallet::warnings::ImplicitCallIndex_0::_w`:
                  It is deprecated to use implicit call indices.
                  Please instead ensure that all calls have the `pallet::call_index` attribute or that the `dev-mode` of the pallet is enabled.
          
@@ -54,7 +54,7 @@ warning: use of deprecated unit struct `pallet::warnings::ImplicitCallIndex::_w`
 
 Or using a hard-coded weight:
 ```pre
-warning: use of deprecated unit struct `pallet::warnings::ConstantWeight::_w`: 
+warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
                  It is deprecated to use hard-coded constant as call weight.
                  Please instead benchmark all calls or put the pallet into `dev` mode.
          
