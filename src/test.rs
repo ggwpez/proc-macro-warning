@@ -17,12 +17,12 @@ fn example_works() {
 		.help_link("https:://example.com")
 		.span(proc_macro2::Span::call_site())
 		.build();
-	let got = quote!(#warning);
+	let got_tokens = quote!(#warning);
 
-	let want = quote!(
-		#[doc = r" This function should not be called and and only exists to emit a compiler warning."]
-		#[doc = r""]
-		#[doc = r" It is a No-OP if you want try it anyway ;)"]
+	let want_tokens = quote!(
+		/// This function should not be called and only exists to emit a compiler warning.
+		///
+		/// It is a No-OP if you want try it anyway ;)
 		#[allow(dead_code)]
 		#[allow(non_camel_case_types)]
 		#[allow(non_snake_case)]
@@ -36,5 +36,5 @@ fn example_works() {
 		}
 	);
 
-	assert_eq!(got.to_string(), want.to_string());
+	assert_eq!(got_tokens.to_string(), want_tokens.to_string());
 }

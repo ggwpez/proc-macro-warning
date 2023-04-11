@@ -7,6 +7,7 @@
 
 use core::ops::Deref;
 use proc_macro2::Span;
+use quote::{quote_spanned, ToTokens};
 
 mod test;
 
@@ -171,13 +172,13 @@ impl Warning {
 	}
 }
 
-impl quote::ToTokens for Warning {
+impl ToTokens for Warning {
 	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
 		let name = self.final_name();
 		let message = self.final_message();
 
-		let q = quote::quote_spanned!(self.span =>
-			/// This function should not be called and and only exists to emit a compiler warning.
+		let q = quote_spanned!(self.span =>
+			/// This function should not be called and only exists to emit a compiler warning.
 			///
 			/// It is a No-OP if you want try it anyway ;)
 			#[allow(dead_code)]
