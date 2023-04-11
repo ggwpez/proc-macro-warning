@@ -117,7 +117,7 @@ impl DeprecatedWarningBuilder {
 		Ok(Warning { name: title, index: self.index, message, links: self.links, span })
 	}
 
-	/// Unwraps [`maybe_build`] for convenience.
+	/// Unwraps [`Self::maybe_build`] for convenience.
 	#[must_use]
 	pub fn build(self) -> Warning {
 		self.maybe_build().expect("maybe_build failed")
