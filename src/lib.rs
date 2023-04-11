@@ -5,6 +5,7 @@
 
 //! Emit warnings from inside proc macros.
 
+use core::ops::Deref;
 use proc_macro2::Span;
 
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
@@ -23,11 +24,11 @@ pub struct Warning {
 /// use proc_macro_warning::Warning;
 ///
 /// let warning = Warning::new_deprecated("my_macro")
-/// 	.old("my_macro()")
-/// 	.new("my_macro::new()")
-/// 	.help_link("https:://example.com")
-/// 	.span(proc_macro2::Span::call_site())
-/// 	.build();
+///     .old("my_macro()")
+///     .new("my_macro::new()")
+///     .help_link("https:://example.com")
+///     .span(proc_macro2::Span::call_site())
+///     .build();
 ///
 /// // Use the warning in a proc macro
 /// let tokens = quote::quote!(#warning);
@@ -35,11 +36,11 @@ pub struct Warning {
 /// let warnings = vec![warning];
 /// // In a proc macro you would expand them inside a module:
 /// quote::quote! {
-/// 	mod warnings {
-/// 			#(
-/// 				#warnings
-/// 			)*
-/// 		}
+///     mod warnings {
+///         #(
+///             #warnings
+///         )*
+///     }
 /// };
 /// ```
 #[derive(Default)]
@@ -94,7 +95,7 @@ impl DeprecatedWarningBuilder {
 	/// Multiple help links for the user to explain the transition and justification.
 	#[must_use]
 	pub fn help_links(self, links: &[&str]) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { links: links.iter().map(|s| s.clone().into()).collect(), ..self }
+		DeprecatedWarningBuilder { links: links.iter().map(|s| s.deref().into()).collect(), ..self }
 	}
 
 	/// The span of the warning.
@@ -104,7 +105,6 @@ impl DeprecatedWarningBuilder {
 	}
 
 	/// Build the warning.
-	#[must_use]
 	pub fn maybe_build(self) -> Result<Warning, String> {
 		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
