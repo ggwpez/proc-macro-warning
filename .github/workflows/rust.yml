@@ -1,0 +1,42 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master", "dev" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Rust Version Info
+      run: |
+        cargo version
+        rustc --version
+        cargo clippy --version
+
+    - name: Format
+      run: cargo fmt --all -- --check
+
+    - name: Build
+      run: cargo build --all-targets --all-features # --locked TODO
+
+    - name: Test
+      run: cargo test --locked --all-targets --all-features
+
+    - name: Clippy
+      run: cargo clippy --locked --all-targets --all-features -- -D warnings
+
+    - name: Documentation
+      run: cargo doc --locked --no-deps --all-features
+
+    - name: Doc Test
+      run: cargo test --locked --doc

@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://www.gnu.org/licenses/gpl-3.0">
-    <img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3">
+    <img src="https://img.shields.io/crates/l/proc-macro-warning" alt="License: (GPL-3.0 or Apache-2.0)">
   </a>
   <a href="https://crates.io/crates/proc-macro-warning">
     <img src="https://img.shields.io/crates/v/proc-macro-warning"/>
@@ -34,7 +34,7 @@ let tokens = quote::quote!(#warning);
 
 ## Used In 
 
-Substrate (not yet, but hopefully [soon](https://github.com/paritytech/substrate/pull/13798) 😉) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
+Substrate (since [#13798](https://github.com/paritytech/substrate/pull/13798)) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
 
 For example not putting a `call_index` on your functions produces:
 ```pre
@@ -67,6 +67,15 @@ warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
 ```
 
 
-## Follow Ups
+## License
 
-- [ ] Use [typesafe-builders](https://github.com/ggwpez/typesafe-builders) to make the `Warning` builder infallible.
+Licensed under either of at your own choice:
+
+* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or https://www.gnu.org/licenses/gpl-3.0.txt)
+* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or https://www.apache.org/licenses/LICENSE-2.0.txt).
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
