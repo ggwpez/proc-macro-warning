@@ -1,6 +1,6 @@
 /*
  * SPDX-FileCopyrightText: Oliver Tale-Yazdi <oliver@tasty.limo>
- * SPDX-License-Identifier: GPL-3.0-only
+ * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
 //! Emit warnings from inside proc macros.

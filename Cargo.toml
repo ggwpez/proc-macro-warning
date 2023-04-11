@@ -2,7 +2,7 @@
 name = "proc-macro-warning"
 version = "0.2.0"
 edition = "2021"
-license = "GPL-3.0-only"
+license = "GPL-3.0 OR Apache-2.0"
 authors = ["Oliver Tale-Yazdi <oliver@tasty.limo>"]
 description = "Emit warnings from inside proc macros."
 repository = "https://github.com/ggwpez/proc-macro-warning"
