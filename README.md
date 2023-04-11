@@ -11,6 +11,9 @@
   <a href="https://crates.io/crates/proc-macro-warning">
     <img src="https://img.shields.io/crates/v/proc-macro-warning"/>
   </a>
+  <a href="https://github.com/ggwpez/proc-macro-warning/actions/workflows/rust.yml">
+    <img src="https://github.com/ggwpez/proc-macro-warning/actions/workflows/rust.yml/badge.svg"/>
+  </a>
 </p>
 
 Rust does not have native functions to produce warnings from inside proc macros. This crate provides "deprecated" warnings for your proc macro use-cases.
