@@ -1,3 +1,5 @@
+//! TESTING ONLY - DO NOT USE.
+
 #[test]
 #[cfg(test)]
 fn ui_warm() {

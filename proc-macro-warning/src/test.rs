@@ -22,7 +22,7 @@ fn example_works() {
 	let want_tokens = quote!(
 		/// This function should not be called and only exists to emit a compiler warning.
 		///
-		/// It is a No-OP if you want try it anyway ;)
+		/// It is a No-OP in any case.
 		#[allow(dead_code)]
 		#[allow(non_camel_case_types)]
 		#[allow(non_snake_case)]

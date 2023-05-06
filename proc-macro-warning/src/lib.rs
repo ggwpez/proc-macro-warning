@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-#![doc = include_str!("../README.md")]
+#![doc = include_str!("../../README.md")]
 
 use core::ops::Deref;
 use proc_macro2::Span;
@@ -20,24 +20,25 @@ pub struct Warning {
 	pub span: Span,
 }
 
-/// Gradually build a "deprecated" `Warning`.
+/// Gradually build a *deprecation* `Warning`.
 ///
 /// # Example
-/// ```
+///
+/// ```rust
 /// use proc_macro_warning::Warning;
 ///
 /// let warning = Warning::new_deprecated("my_macro")
 ///     .old("my_macro()")
 ///     .new("my_macro::new()")
 ///     .help_link("https:://example.com")
+///		// Normally you use the input span, but this is an example:
 ///     .span(proc_macro2::Span::call_site())
 ///     .build();
 ///
-/// // Use the warning in a proc macro
-/// let tokens = quote::quote!(#warning);
+/// let mut warnings = vec![warning];
+/// // When adding more, you will need to build each with `.index`.
 ///
-/// let warnings = vec![warning];
-/// // In a proc macro you would expand them inside a module:
+/// // In a proc macro you can expand them in a private module:
 /// quote::quote! {
 ///     mod warnings {
 ///         #(
@@ -180,7 +181,7 @@ impl ToTokens for Warning {
 		let q = quote_spanned!(self.span =>
 			/// This function should not be called and only exists to emit a compiler warning.
 			///
-			/// It is a No-OP if you want try it anyway ;)
+			/// It is a No-OP in any case.
 			#[allow(dead_code)]
 			#[allow(non_camel_case_types)]
 			#[allow(non_snake_case)]
@@ -192,5 +193,12 @@ impl ToTokens for Warning {
 			}
 		);
 		q.to_tokens(stream);
+	}
+}
+
+impl Warning {
+	/// Consume self and quote it, according to its span, into a TokenStream.
+	pub fn into_token_stream(self) -> proc_macro2::TokenStream {
+		quote::quote! { #self }.into()
 	}
 }

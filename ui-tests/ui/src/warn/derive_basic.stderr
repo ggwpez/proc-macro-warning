@@ -3,9 +3,7 @@ error: use of deprecated constant `test::_w`:
                Please instead bar.
  --> src/warn/derive_basic.rs:2:1
   |
-2 | / struct Test {
-3 | |
-4 | | }
-  | |_^
+2 | struct Test;
+  | ^^^^^^^^^^^^
   |
   = note: `-D deprecated` implied by `-D warnings`

@@ -36,13 +36,25 @@ let warning = Warning::new_deprecated("my_macro")
 let tokens = quote::quote!(#warning);
 ```
 
-This works in derive-macros, but you **must** put in a span, otherwise it will not show up in the compile output.  
+This works in derive-macros, but you **must** set a span; otherwise it will not show up in the compile output.
+
+The difference to a `#[deprecated]` attribute is that it emits the warning either way. For example when creating a custom `Deprecated` derive macro, it will warn without the struct being constructed.
+
+```rust
+#[derive(derive::Deprecated)]
+struct Test {}
+
+fn main() {
+  // Warning triggers although we never used `Test`.  
+  // Otherwise use a normal `#[deprecated]`.
+}
+```
 
 ## Used In 
 
-Substrate (since [#13798](https://github.com/paritytech/substrate/pull/13798)) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
+Substrate uses it to emit warnings for its eDSL (FRAME) on deprecated behaviour. The integration was done in [#13798](https://github.com/paritytech/substrate/pull/13798) and shows how to use these warnings in macro expansion.
 
-For example not putting a `call_index` on your functions produces:
+The warnings are uniformly formatted and have consistent grammar:
 ```pre
 warning: use of deprecated constant `pallet::warnings::ImplicitCallIndex_0::_w`:
                  It is deprecated to use implicit call indices.
@@ -58,7 +70,7 @@ warning: use of deprecated constant `pallet::warnings::ImplicitCallIndex_0::_w`:
      |
 ```
 
-Or using a hard-coded weight:
+A different one:
 ```pre
 warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
                  It is deprecated to use hard-coded constant as call weight.

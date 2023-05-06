@@ -8,6 +8,6 @@ publish = false
 proc-macro = true
 
 [dependencies]
-proc-macro-warning = { path = "../../" }
+proc-macro-warning = { path = "../../proc-macro-warning" }
 quote = "1.0.26"
 syn = "2.0.15"

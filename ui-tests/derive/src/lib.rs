@@ -1,3 +1,5 @@
+//! TESTING ONLY - DO NOT USE.
+
 use proc_macro::TokenStream;
 use syn::spanned::Spanned;
 
@@ -22,5 +24,5 @@ fn impl_dep(input: TokenStream, span: bool) -> TokenStream {
         warning
     }.build();
 
-    quote::quote!{ #warning }.into()
+    warning.into_token_stream().into()
 }

@@ -1,8 +1,5 @@
 #[derive(derive::Deprecated)]
-struct Test {
-
-}
+struct Test;
 
 fn main() {
-    let _ = Test { };
 }
