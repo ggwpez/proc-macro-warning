@@ -24,6 +24,7 @@ Building a warning is easy with the builder pattern.
 
 ```rust
 use proc_macro_warning::Warning;
+
 let warning = Warning::new_deprecated("my_macro")
 	.old("my_macro()")
 	.new("my_macro::new()")
@@ -34,6 +35,8 @@ let warning = Warning::new_deprecated("my_macro")
 // Use the warning in a proc macro
 let tokens = quote::quote!(#warning);
 ```
+
+This works in derive-macros, but you **must** put in a span, otherwise it will not show up in the compile output.  
 
 ## Used In 
 
@@ -69,13 +72,12 @@ warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
      |                          
 ```
 
-
 ## License
 
 Licensed under either of at your own choice:
 
-* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or https://www.gnu.org/licenses/gpl-3.0.txt)
-* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or https://www.apache.org/licenses/LICENSE-2.0.txt).
+* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or [gnu.org](https://www.gnu.org/licenses/gpl-3.0.txt>))
+* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or [apache.org](https://www.apache.org/licenses/LICENSE-2.0.txt>)).
 
 ### Contribution
 

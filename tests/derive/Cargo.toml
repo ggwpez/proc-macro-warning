@@ -1,0 +1,13 @@
+[package]
+name = "derive"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro-warning = { path = "../../" }
+quote = "1.0.26"
+syn = "2.0.15"

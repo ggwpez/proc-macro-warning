@@ -1,0 +1,9 @@
+[package]
+name = "ui"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dev-dependencies]
+trybuild = "1.0.80"
+derive = { path = "../derive" }

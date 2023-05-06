@@ -1,0 +1,11 @@
+error: use of deprecated constant `test::_w`:
+               It is deprecated to foo.
+               Please instead bar.
+ --> src/warn/derive_basic.rs:2:1
+  |
+2 | / struct Test {
+3 | |
+4 | | }
+  | |_^
+  |
+  = note: `-D deprecated` implied by `-D warnings`

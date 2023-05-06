@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-//! Emit warnings from inside proc macros.
+#![doc = include_str!("../README.md")]
 
 use core::ops::Deref;
 use proc_macro2::Span;
