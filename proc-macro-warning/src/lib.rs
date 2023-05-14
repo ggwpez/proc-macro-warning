@@ -72,7 +72,7 @@ impl FormattedWarning {
 ///     .old("my_macro()")
 ///     .new("my_macro::new()")
 ///     .help_link("https:://example.com")
-/// 		// Normally you use the input span, but this is an example:
+///     // Normally you use the input span, but this is an example:
 ///     .span(proc_macro2::Span::call_site())
 ///     .build();
 ///
@@ -207,12 +207,12 @@ impl Warning {
 	}
 }
 
-impl Into<FormattedWarning> for Warning {
-	fn into(self) -> FormattedWarning {
-		match self {
-			Self::Deprecated { span, .. } => FormattedWarning::Deprecated {
-				name: self.final_deprecated_name(),
-				note: self.final_deprecated_message(),
+impl From<Warning> for FormattedWarning {
+	fn from(val: Warning) -> Self {
+		match val {
+			Warning::Deprecated { span, .. } => FormattedWarning::Deprecated {
+				name: val.final_deprecated_name(),
+				note: val.final_deprecated_message(),
 				span: Some(span),
 			},
 		}
