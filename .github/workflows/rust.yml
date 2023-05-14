@@ -26,8 +26,11 @@ jobs:
     - name: Format
       run: cargo fmt --all -- --check
 
+    - name: Check no-std
+      run: cargo check --no-default-features
+
     - name: Build
-      run: cargo build --all-targets --all-features # --locked TODO
+      run: cargo build --all-targets --all-features --locked
 
     - name: Test
       run: TRYBUILD=overwrite cargo test --locked --all-targets --all-features
