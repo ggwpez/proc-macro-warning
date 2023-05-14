@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-//! Emit warnings from inside proc macros.
+#![doc = include_str!("../../README.md")]
 
 use core::ops::Deref;
 use proc_macro2::Span;
@@ -12,32 +12,74 @@ use quote::{quote_spanned, ToTokens};
 mod test;
 
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
-pub struct Warning {
-	pub name: String,
-	pub index: Option<usize>,
-	pub message: String,
-	pub links: Vec<String>,
-	pub span: Span,
+#[derive(Clone)]
+pub enum Warning {
+	/// A *deprecation* warning that notifies users of outdated types and functions.
+	Deprecated {
+		name: String,
+		index: Option<usize>,
+		message: String,
+		links: Vec<String>,
+		span: Span,
+	},
 }
 
-/// Gradually build a "deprecated" `Warning`.
+/// A compile-time warning that was already subject to formatting.
+///
+/// Any content will be pasted as-is.
+#[derive(Clone)]
+pub enum FormattedWarning {
+	/// A *deprecation* warning.
+	Deprecated {
+		/// Unique name of this warning.
+		///
+		/// Must be unique in the case that multiple of these warnings are emitted, for example by
+		/// appending a counter.
+		name: syn::Ident,
+		/// The exact note to be used for `note = ""`.
+		note: String,
+		/// The span of the warning.
+		///
+		/// Should be set to the original location of where the warning should be emitted.
+		span: Option<Span>,
+	},
+}
+
+impl FormattedWarning {
+	/// Create a new deprecated warning that already was formatted by the caller.
+	#[must_use]
+	pub fn new_deprecated<'a, S, T>(name: S, note: T, span: Span) -> Self
+	where
+		S: Into<&'a str>,
+		T: Into<String>,
+	{
+		Self::Deprecated {
+			name: syn::Ident::new(name.into(), span),
+			note: note.into(),
+			span: Some(span),
+		}
+	}
+}
+
+/// Gradually build a *deprecation* `Warning`.
 ///
 /// # Example
-/// ```
+///
+/// ```rust
 /// use proc_macro_warning::Warning;
 ///
 /// let warning = Warning::new_deprecated("my_macro")
 ///     .old("my_macro()")
 ///     .new("my_macro::new()")
 ///     .help_link("https:://example.com")
+///     // Normally you use the input span, but this is an example:
 ///     .span(proc_macro2::Span::call_site())
 ///     .build();
 ///
-/// // Use the warning in a proc macro
-/// let tokens = quote::quote!(#warning);
+/// let mut warnings = vec![warning];
+/// // When adding more, you will need to build each with `.index`.
 ///
-/// let warnings = vec![warning];
-/// // In a proc macro you would expand them inside a module:
+/// // In a proc macro you can expand them in a private module:
 /// quote::quote! {
 ///     mod warnings {
 ///         #(
@@ -115,7 +157,7 @@ impl DeprecatedWarningBuilder {
 		let new = self.new.ok_or("Missing new")?;
 		let message = format!("It is deprecated to {}.\nPlease instead {}.", old, new);
 
-		Ok(Warning { name: title, index: self.index, message, links: self.links, span })
+		Ok(Warning::Deprecated { name: title, index: self.index, message, links: self.links, span })
 	}
 
 	/// Unwraps [`Self::maybe_build`] for convenience.
@@ -126,17 +168,6 @@ impl DeprecatedWarningBuilder {
 }
 
 impl Warning {
-	/// Create a new *raw* warnings.
-	pub fn new_raw(
-		name: String,
-		index: Option<usize>,
-		message: String,
-		help_links: Vec<String>,
-		span: Span,
-	) -> Warning {
-		Warning { name, index, message, links: help_links, span }
-	}
-
 	/// Create a new *deprecated* warning.
 	#[must_use]
 	pub fn new_deprecated(title: &str) -> DeprecatedWarningBuilder {
@@ -144,18 +175,18 @@ impl Warning {
 	}
 
 	/// Sanitize the warning message.
-	fn final_message(&self) -> String {
-		let lines = self.message.trim().lines().map(|line| line.trim_start());
+	fn final_deprecated_message(&self) -> String {
+		let (message, links) = match self {
+			Warning::Deprecated { message, links, .. } => (message, links),
+		};
+
+		let lines = message.trim().lines().map(|line| line.trim_start());
 		// Prepend two tabs to each line
 		let message = lines.map(|line| format!("\t\t{}", line)).collect::<Vec<_>>().join("\n");
 
-		if !self.links.is_empty() {
-			let link = self
-				.links
-				.iter()
-				.map(|l| format!("<{}>", l))
-				.collect::<Vec<_>>()
-				.join("\n\t\t\t");
+		if !links.is_empty() {
+			let link =
+				links.iter().map(|l| format!("<{}>", l)).collect::<Vec<_>>().join("\n\t\t\t");
 			format!("\n{}\n\n\t\tFor more info see:\n\t\t\t{}", message, link)
 		} else {
 			format!("\n{}", message)
@@ -163,29 +194,54 @@ impl Warning {
 	}
 
 	/// Sanitize the warning name.
-	fn final_name(&self) -> syn::Ident {
-		let name = match self.index {
-			Some(i) => format!("{}_{}", self.name, i),
-			None => self.name.clone(),
+	fn final_deprecated_name(&self) -> syn::Ident {
+		let (index, name, span) = match self {
+			Warning::Deprecated { index, name, span, .. } => (*index, name, *span),
 		};
-		syn::Ident::new(&name, self.span)
+
+		let name = match index {
+			Some(i) => format!("{}_{}", name, i),
+			None => name.clone(),
+		};
+		syn::Ident::new(&name, span)
+	}
+}
+
+impl From<Warning> for FormattedWarning {
+	fn from(val: Warning) -> Self {
+		match val {
+			Warning::Deprecated { span, .. } => FormattedWarning::Deprecated {
+				name: val.final_deprecated_name(),
+				note: val.final_deprecated_message(),
+				span: Some(span),
+			},
+		}
 	}
 }
 
 impl ToTokens for Warning {
 	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
-		let name = self.final_name();
-		let message = self.final_message();
+		let formatted: FormattedWarning = self.clone().into();
+		formatted.to_tokens(stream);
+	}
+}
 
-		let q = quote_spanned!(self.span =>
+impl ToTokens for FormattedWarning {
+	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
+		let (name, note, span) = match self {
+			FormattedWarning::Deprecated { name, note, span } => (name, note, span),
+		};
+		let span = span.unwrap_or_else(Span::call_site);
+
+		let q = quote_spanned!(span =>
 			/// This function should not be called and only exists to emit a compiler warning.
 			///
-			/// It is a No-OP if you want try it anyway ;)
+			/// It is a No-OP in any case.
 			#[allow(dead_code)]
 			#[allow(non_camel_case_types)]
 			#[allow(non_snake_case)]
 			fn #name() {
-				#[deprecated(note = #message)]
+				#[deprecated(note = #note)]
 				#[allow(non_upper_case_globals)]
 				const _w: () = ();
 				let _ = _w;

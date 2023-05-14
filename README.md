@@ -24,6 +24,7 @@ Building a warning is easy with the builder pattern.
 
 ```rust
 use proc_macro_warning::Warning;
+
 let warning = Warning::new_deprecated("my_macro")
 	.old("my_macro()")
 	.new("my_macro::new()")
@@ -35,11 +36,45 @@ let warning = Warning::new_deprecated("my_macro")
 let tokens = quote::quote!(#warning);
 ```
 
+This works in derive-macros, but you **must** set a span; otherwise it will not show up in the compile output.
+
+The difference to a `#[deprecated]` attribute is that it emits the warning either way. For example when creating a custom `Deprecated` derive macro, it will warn without the struct being constructed.
+
+```rust
+#[derive(derive::Deprecated)]
+struct Test {}
+
+fn main() {
+  // Warning triggers although we never used `Test`.  
+  // Otherwise use a normal `#[deprecated]`.
+}
+```
+
+## Un-opinionated Formatting
+
+The normal aforementioned way of creating a warning will impose specific unified grammar and formatting rules.  
+You can opt out of this and use your own instead by using `FormattedWarning::new_deprecated`:  
+
+```rust
+use proc_macro_warning::FormattedWarning;
+
+let warning = FormattedWarning::new_deprecated(
+      "my_macro",
+      "looooooooooooooooooooooooooooooong line that will not be brokeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeen ;)",
+      proc_macro2::Span::call_site(),
+    );
+
+// Use the warning in a proc macro
+let tokens = quote::quote!(#warning);
+```
+
+The output of a [similar example](ui-tests/derive/src/lib.rs) is in [derive_raw.stderr](ui-tests/ui/src/warn/derive_raw.stderr).
+
 ## Used In 
 
-Substrate (since [#13798](https://github.com/paritytech/substrate/pull/13798)) uses this to emit warnings for its FRAME eDSL on deprecated behaviour.
+Substrate uses it to emit warnings for its eDSL (FRAME) on deprecated behaviour. The integration was done in [#13798](https://github.com/paritytech/substrate/pull/13798) and shows how to use these warnings in macro expansion.
 
-For example not putting a `call_index` on your functions produces:
+The warnings are uniformly formatted and have consistent grammar:
 ```pre
 warning: use of deprecated constant `pallet::warnings::ImplicitCallIndex_0::_w`:
                  It is deprecated to use implicit call indices.
@@ -55,7 +90,7 @@ warning: use of deprecated constant `pallet::warnings::ImplicitCallIndex_0::_w`:
      |
 ```
 
-Or using a hard-coded weight:
+A different one:
 ```pre
 warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
                  It is deprecated to use hard-coded constant as call weight.
@@ -69,13 +104,12 @@ warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
      |                          
 ```
 
-
 ## License
 
 Licensed under either of at your own choice:
 
-* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or https://www.gnu.org/licenses/gpl-3.0.txt)
-* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or https://www.apache.org/licenses/LICENSE-2.0.txt).
+* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or [gnu.org](https://www.gnu.org/licenses/gpl-3.0.txt>))
+* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or [apache.org](https://www.apache.org/licenses/LICENSE-2.0.txt>)).
 
 ### Contribution
 

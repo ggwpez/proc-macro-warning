@@ -26,11 +26,14 @@ jobs:
     - name: Format
       run: cargo fmt --all -- --check
 
+    - name: Check no-std
+      run: cargo check --all-targets --no-default-features # still broken --locked
+
     - name: Build
-      run: cargo build --all-targets --all-features # --locked TODO
+      run: cargo build --all-targets --all-features --locked
 
     - name: Test
-      run: cargo test --locked --all-targets --all-features
+      run: TRYBUILD=overwrite cargo test --locked --all-targets --all-features
 
     - name: Clippy
       run: cargo clippy --locked --all-targets --all-features -- -D warnings
