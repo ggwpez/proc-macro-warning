@@ -2,6 +2,7 @@
 
 use proc_macro::TokenStream;
 use syn::spanned::Spanned;
+use quote::ToTokens;
 
 #[proc_macro_derive(Deprecated)]
 pub fn deprecated(input: TokenStream) -> TokenStream {
@@ -23,6 +24,25 @@ fn impl_dep(input: TokenStream, span: bool) -> TokenStream {
     } else {
         warning
     }.build();
+
+    warning.into_token_stream().into()
+}
+
+#[proc_macro_derive(DeprecatedRaw)]
+pub fn deprecated_raw(input: TokenStream) -> TokenStream {
+    impl_dep_raw(input)
+}
+
+fn impl_dep_raw(input: TokenStream) -> TokenStream {
+    let input = syn::parse_macro_input!(input as syn::DeriveInput);
+
+    let warning = proc_macro_warning::FormattedWarning::new_deprecated(
+            "VeryOldStuff",
+            "\nMy message do noooooooooooooooooooooooooooooot formaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat
+or chaaaaaaaaaaaaange this, also no line breaks please ;)
+other veryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy looooooooooooooooooooooong lineeeeeeeeeeeeeeee",
+            input.span(),
+        );
 
     warning.into_token_stream().into()
 }

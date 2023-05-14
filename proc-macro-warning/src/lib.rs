@@ -12,12 +12,50 @@ use quote::{quote_spanned, ToTokens};
 mod test;
 
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
+#[derive(Clone)]
 pub struct Warning {
 	pub name: String,
 	pub index: Option<usize>,
 	pub message: String,
 	pub links: Vec<String>,
 	pub span: Span,
+}
+
+/// A compile-time warning that was already subject to formatting.
+/// 
+/// Any content will be pasted as-is.
+#[derive(Clone)]
+pub enum FormattedWarning {
+	/// A *deprecation* warning.
+	Deprecated {
+		/// Unique name of this warning.
+		/// 
+		/// Must be unique in the case that multiple of these warnings are emitted, for example by
+		/// appending a counter.
+		name: syn::Ident,
+		/// The exact note to be used for `note = ""`.
+		note: String,
+		/// The span of the warning.
+		/// 
+		/// Should be set to the original location of where the warning should be emitted.
+		span: Option<Span>,
+	},
+}
+
+impl FormattedWarning {
+	/// Create a new deprecated warning that already was formatted by the caller.
+	#[must_use]
+	pub fn new_deprecated<'a, S, T>(name: S, note: T, span: Span) -> Self
+	where
+		S: Into<&'a str>,
+		T: Into<String>,
+	{
+		Self::Deprecated {
+			name: syn::Ident::new(name.into(), span),
+			note: note.into(),
+			span: Some(span),
+		}
+	}
 }
 
 /// Gradually build a *deprecation* `Warning`.
@@ -127,7 +165,7 @@ impl DeprecatedWarningBuilder {
 }
 
 impl Warning {
-	/// Create a new *raw* warnings.
+	/// Create a new *raw* warning.
 	pub fn new_raw(
 		name: String,
 		index: Option<usize>,
@@ -173,12 +211,30 @@ impl Warning {
 	}
 }
 
+impl Into<FormattedWarning> for Warning {
+	fn into(self) -> FormattedWarning {
+		FormattedWarning::Deprecated {
+			name: self.final_name(),
+			note: self.final_message(),
+			span: Some(self.span),
+		}
+	}
+}
+
 impl ToTokens for Warning {
 	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
-		let name = self.final_name();
-		let message = self.final_message();
+		let formatted: FormattedWarning = self.clone().into();
+		formatted.to_tokens(stream);
+	}
+}
 
-		let q = quote_spanned!(self.span =>
+impl ToTokens for FormattedWarning {
+	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
+		let (name, note, span) = match self {
+			FormattedWarning::Deprecated { name, note, span } => (name, note, span),
+		};
+
+		let q = quote_spanned!(*span =>
 			/// This function should not be called and only exists to emit a compiler warning.
 			///
 			/// It is a No-OP in any case.
@@ -186,19 +242,12 @@ impl ToTokens for Warning {
 			#[allow(non_camel_case_types)]
 			#[allow(non_snake_case)]
 			fn #name() {
-				#[deprecated(note = #message)]
+				#[deprecated(note = #note)]
 				#[allow(non_upper_case_globals)]
 				const _w: () = ();
 				let _ = _w;
 			}
 		);
 		q.to_tokens(stream);
-	}
-}
-
-impl Warning {
-	/// Consume self and quote it, according to its span, into a TokenStream.
-	pub fn into_token_stream(self) -> proc_macro2::TokenStream {
-		quote::quote! { #self }.into()
 	}
 }

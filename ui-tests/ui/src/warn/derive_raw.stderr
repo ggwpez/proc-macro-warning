@@ -1,0 +1,10 @@
+error: use of deprecated constant `VeryOldStuff::_w`:
+       My message do noooooooooooooooooooooooooooooot formaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat
+       or chaaaaaaaaaaaaange this, also no line breaks please ;)
+       other veryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy looooooooooooooooooooooong lineeeeeeeeeeeeeeee
+ --> src/warn/derive_raw.rs:2:1
+  |
+2 | struct Test;
+  | ^^^^^^^^^^^^
+  |
+  = note: `-D deprecated` implied by `-D warnings`
