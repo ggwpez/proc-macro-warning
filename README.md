@@ -50,6 +50,26 @@ fn main() {
 }
 ```
 
+## Un-opinionated Formatting
+
+The normal aforementioned way of creating a warning will impose specific unified grammar and formatting rules.  
+You can opt out of this and use your own instead by using `FormattedWarning::new_deprecated`:  
+
+```rust
+use proc_macro_warning::FormattedWarning;
+
+let warning = FormattedWarning::new_deprecated(
+      "my_macro",
+      "looooooooooooooooooooooooooooooong line that will not be brokeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeen ;)",
+      proc_macro2::Span::call_site(),
+    );
+
+// Use the warning in a proc macro
+let tokens = quote::quote!(#warning);
+```
+
+The output of a [similar example](ui-tests/derive/src/lib.rs) is in [derive_raw.stderr](ui-tests/ui/src/warn/derive_raw.stderr).
+
 ## Used In 
 
 Substrate uses it to emit warnings for its eDSL (FRAME) on deprecated behaviour. The integration was done in [#13798](https://github.com/paritytech/substrate/pull/13798) and shows how to use these warnings in macro expansion.

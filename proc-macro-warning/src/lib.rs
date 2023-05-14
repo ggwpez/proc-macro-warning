@@ -233,8 +233,9 @@ impl ToTokens for FormattedWarning {
 		let (name, note, span) = match self {
 			FormattedWarning::Deprecated { name, note, span } => (name, note, span),
 		};
+		let span = span.unwrap_or_else(Span::call_site);
 
-		let q = quote_spanned!(*span =>
+		let q = quote_spanned!(span =>
 			/// This function should not be called and only exists to emit a compiler warning.
 			///
 			/// It is a No-OP in any case.
