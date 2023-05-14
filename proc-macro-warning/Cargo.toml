@@ -7,7 +7,7 @@ authors = ["Oliver Tale-Yazdi <oliver@tasty.limo>"]
 description = "Emit warnings from inside proc macros."
 repository = "https://github.com/ggwpez/proc-macro-warning"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+build = "build.rs"
 
 [dependencies]
 proc-macro2 = { version = "1.0.56", default-features = false }

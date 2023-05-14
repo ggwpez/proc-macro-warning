@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-#![doc = include_str!("../../README.md")]
+#![doc = include_str!(env!("README_PATH"))]
+#![deny(unsafe_code)]
 
 use core::ops::Deref;
 use proc_macro2::Span;
