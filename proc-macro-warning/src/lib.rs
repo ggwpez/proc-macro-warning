@@ -13,30 +13,33 @@ mod test;
 
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
 #[derive(Clone)]
-pub struct Warning {
-	pub name: String,
-	pub index: Option<usize>,
-	pub message: String,
-	pub links: Vec<String>,
-	pub span: Span,
+pub enum Warning {
+	/// A *deprecation* warning that notifies users of outdated types and functions.
+	Deprecated {
+		name: String,
+		index: Option<usize>,
+		message: String,
+		links: Vec<String>,
+		span: Span,
+	},
 }
 
 /// A compile-time warning that was already subject to formatting.
-/// 
+///
 /// Any content will be pasted as-is.
 #[derive(Clone)]
 pub enum FormattedWarning {
 	/// A *deprecation* warning.
 	Deprecated {
 		/// Unique name of this warning.
-		/// 
+		///
 		/// Must be unique in the case that multiple of these warnings are emitted, for example by
 		/// appending a counter.
 		name: syn::Ident,
 		/// The exact note to be used for `note = ""`.
 		note: String,
 		/// The span of the warning.
-		/// 
+		///
 		/// Should be set to the original location of where the warning should be emitted.
 		span: Option<Span>,
 	},
@@ -69,7 +72,7 @@ impl FormattedWarning {
 ///     .old("my_macro()")
 ///     .new("my_macro::new()")
 ///     .help_link("https:://example.com")
-///		// Normally you use the input span, but this is an example:
+/// 		// Normally you use the input span, but this is an example:
 ///     .span(proc_macro2::Span::call_site())
 ///     .build();
 ///
@@ -154,7 +157,7 @@ impl DeprecatedWarningBuilder {
 		let new = self.new.ok_or("Missing new")?;
 		let message = format!("It is deprecated to {}.\nPlease instead {}.", old, new);
 
-		Ok(Warning { name: title, index: self.index, message, links: self.links, span })
+		Ok(Warning::Deprecated { name: title, index: self.index, message, links: self.links, span })
 	}
 
 	/// Unwraps [`Self::maybe_build`] for convenience.
@@ -165,17 +168,6 @@ impl DeprecatedWarningBuilder {
 }
 
 impl Warning {
-	/// Create a new *raw* warning.
-	pub fn new_raw(
-		name: String,
-		index: Option<usize>,
-		message: String,
-		help_links: Vec<String>,
-		span: Span,
-	) -> Warning {
-		Warning { name, index, message, links: help_links, span }
-	}
-
 	/// Create a new *deprecated* warning.
 	#[must_use]
 	pub fn new_deprecated(title: &str) -> DeprecatedWarningBuilder {
@@ -183,18 +175,18 @@ impl Warning {
 	}
 
 	/// Sanitize the warning message.
-	fn final_message(&self) -> String {
-		let lines = self.message.trim().lines().map(|line| line.trim_start());
+	fn final_deprecated_message(&self) -> String {
+		let (message, links) = match self {
+			Warning::Deprecated { message, links, .. } => (message, links),
+		};
+
+		let lines = message.trim().lines().map(|line| line.trim_start());
 		// Prepend two tabs to each line
 		let message = lines.map(|line| format!("\t\t{}", line)).collect::<Vec<_>>().join("\n");
 
-		if !self.links.is_empty() {
-			let link = self
-				.links
-				.iter()
-				.map(|l| format!("<{}>", l))
-				.collect::<Vec<_>>()
-				.join("\n\t\t\t");
+		if !links.is_empty() {
+			let link =
+				links.iter().map(|l| format!("<{}>", l)).collect::<Vec<_>>().join("\n\t\t\t");
 			format!("\n{}\n\n\t\tFor more info see:\n\t\t\t{}", message, link)
 		} else {
 			format!("\n{}", message)
@@ -202,21 +194,27 @@ impl Warning {
 	}
 
 	/// Sanitize the warning name.
-	fn final_name(&self) -> syn::Ident {
-		let name = match self.index {
-			Some(i) => format!("{}_{}", self.name, i),
-			None => self.name.clone(),
+	fn final_deprecated_name(&self) -> syn::Ident {
+		let (index, name, span) = match self {
+			Warning::Deprecated { index, name, span, .. } => (*index, name, *span),
 		};
-		syn::Ident::new(&name, self.span)
+
+		let name = match index {
+			Some(i) => format!("{}_{}", name, i),
+			None => name.clone(),
+		};
+		syn::Ident::new(&name, span)
 	}
 }
 
 impl Into<FormattedWarning> for Warning {
 	fn into(self) -> FormattedWarning {
-		FormattedWarning::Deprecated {
-			name: self.final_name(),
-			note: self.final_message(),
-			span: Some(self.span),
+		match self {
+			Self::Deprecated { span, .. } => FormattedWarning::Deprecated {
+				name: self.final_deprecated_name(),
+				note: self.final_deprecated_message(),
+				span: Some(span),
+			},
 		}
 	}
 }
