@@ -1,4 +1,5 @@
 [workspace]
+readme = "README.md"
 
 members = [
 	"proc-macro-warning",
