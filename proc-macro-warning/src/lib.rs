@@ -4,6 +4,7 @@
  */
 
 #![doc = include_str!(env!("README_PATH"))]
+#![deny(unsafe_code)]
 
 use core::ops::Deref;
 use proc_macro2::Span;
