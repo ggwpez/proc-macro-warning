@@ -1,7 +1,6 @@
 /target/
 **/target
 
-Cargo.lock
 **/*.rs.bk
 
 .vscode/
