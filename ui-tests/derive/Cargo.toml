@@ -9,5 +9,5 @@ proc-macro = true
 
 [dependencies]
 proc-macro-warning = { path = "../../proc-macro-warning" }
-quote = "1.0.27"
-syn = "2.0.16"
+quote = "1.0.33"
+syn = "2.0.29"
