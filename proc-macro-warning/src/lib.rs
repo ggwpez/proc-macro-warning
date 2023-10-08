@@ -161,7 +161,14 @@ impl DeprecatedWarningBuilder {
 	}
 
 	/// Fallibly build a warning.
+	#[deprecated(note = "Use `try_build` instead; Will be removed after Q1 2024")]
 	pub fn maybe_build(self) -> Result<Warning, String> {
+		self.try_build()
+	}
+
+	/// Try to build the warning.
+	#[must_use]
+	pub fn try_build(self) -> Result<Warning, String> {
 		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
 		let old = self.old.ok_or("Missing old")?;
@@ -174,6 +181,11 @@ impl DeprecatedWarningBuilder {
 	/// Unwraps [`Self::maybe_build`] for convenience.
 	#[must_use]
 	pub fn build(self) -> Warning {
+		self.build_or_panic()
+	}
+
+	#[must_use]
+	pub fn build_or_panic(self) -> Warning {
 		self.maybe_build().expect("maybe_build failed")
 	}
 }
