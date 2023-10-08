@@ -5,9 +5,12 @@
 
 #![doc = include_str!(env!("README_PATH"))]
 #![deny(unsafe_code)]
+#![deny(missing_docs)]
 
+use syn::Ident;
 use core::ops::Deref;
 use proc_macro2::Span;
+use syn::spanned::Spanned;
 use quote::{quote_spanned, ToTokens};
 
 mod test;
@@ -17,10 +20,15 @@ mod test;
 pub enum Warning {
 	/// A *deprecation* warning that notifies users of outdated types and functions.
 	Deprecated {
+		/// The name of the warning.
 		name: String,
+		/// The index of the warning. Name++Index must be unique.
 		index: Option<usize>,
+		/// The message of the warning.
 		message: String,
+		/// The help links to be displayed next to the message.
 		links: Vec<String>,
+		/// The span of the warning.
 		span: Span,
 	},
 }
@@ -36,7 +44,7 @@ pub enum FormattedWarning {
 		///
 		/// Must be unique in the case that multiple of these warnings are emitted, for example by
 		/// appending a counter.
-		name: syn::Ident,
+		name: Ident,
 		/// The exact note to be used for `note = ""`.
 		note: String,
 		/// The span of the warning.
@@ -49,13 +57,13 @@ pub enum FormattedWarning {
 impl FormattedWarning {
 	/// Create a new deprecated warning that already was formatted by the caller.
 	#[must_use]
-	pub fn new_deprecated<'a, S, T>(name: S, note: T, span: Span) -> Self
+	pub fn new_deprecated<S, T>(name: S, note: T, span: Span) -> Self
 	where
-		S: Into<&'a str>,
+		S: AsRef<str>,
 		T: Into<String>,
 	{
 		Self::Deprecated {
-			name: syn::Ident::new(name.into(), span),
+			name: Ident::new(name.as_ref(), span),
 			note: note.into(),
 			span: Some(span),
 		}
@@ -144,10 +152,16 @@ impl DeprecatedWarningBuilder {
 		Self { links: links.iter().map(|s| s.deref().into()).collect(), ..self }
 	}
 
-	/// The span of the warning.
+	/// Set the span of the warning.
 	#[must_use]
 	pub fn span(self, span: Span) -> Self {
 		Self { span: Some(span), ..self }
+	}
+
+	/// Set the span of the warning to the span of `s`.
+	#[must_use]
+	pub fn spanned<S: Spanned>(self, spanned: S) -> Self {
+		Self { span: Some(spanned.span()), ..self }
 	}
 
 	/// Fallibly build a warning.
@@ -171,7 +185,7 @@ impl DeprecatedWarningBuilder {
 impl Warning {
 	/// Create a new *deprecated* warning.
 	#[must_use]
-	pub fn new_deprecated(title: &str) -> DeprecatedWarningBuilder {
+	pub fn new_deprecated<S: Into<String>>(title: S) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder::from_title(title)
 	}
 
@@ -195,7 +209,7 @@ impl Warning {
 	}
 
 	/// Sanitize the warning name.
-	fn final_deprecated_name(&self) -> syn::Ident {
+	fn final_deprecated_name(&self) -> Ident {
 		let (index, name, span) = match self {
 			Self::Deprecated { index, name, span, .. } => (*index, name, *span),
 		};
@@ -204,7 +218,8 @@ impl Warning {
 			Some(i) => format!("{}_{}", name, i),
 			None => name.clone(),
 		};
-		syn::Ident::new(&name, span)
+		
+		Ident::new(&name, span)
 	}
 }
 
