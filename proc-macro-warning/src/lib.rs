@@ -104,7 +104,7 @@ impl DeprecatedWarningBuilder {
 	///
 	/// The title must be unique for each warning.
 	#[must_use]
-	pub fn from_title(title: &str) -> DeprecatedWarningBuilder {
+	pub fn from_title<S: Into<String>>(title: S) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { title: title.into(), ..Default::default() }
 	}
 
@@ -112,15 +112,15 @@ impl DeprecatedWarningBuilder {
 	///
 	/// Must be set if a warning appears multiple times.
 	#[must_use]
-	pub fn index(self, index: usize) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { index: Some(index), ..self }
+	pub fn index<S: Into<usize>>(self, index: S) -> DeprecatedWarningBuilder {
+		DeprecatedWarningBuilder { index: Some(index.into()), ..self }
 	}
 
 	/// The old *deprecated* way of doing something.
 	///
 	/// Should complete the sentence "It is deprecated to ...".
 	#[must_use]
-	pub fn old(self, old: &str) -> DeprecatedWarningBuilder {
+	pub fn old<S: Into<String>>(self, old: S) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { old: Some(old.into()), ..self }
 	}
 
@@ -128,13 +128,13 @@ impl DeprecatedWarningBuilder {
 	///
 	/// Should complete the sentence "Please instead ...".
 	#[must_use]
-	pub fn new(self, new: &str) -> DeprecatedWarningBuilder {
+	pub fn new<S: Into<String>>(self, new: S) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { new: Some(new.into()), ..self }
 	}
 
 	/// A help link for the user to explain the transition and justification.
 	#[must_use]
-	pub fn help_link(self, link: &str) -> DeprecatedWarningBuilder {
+	pub fn help_link<S: Into<String>>(self, link: S) -> DeprecatedWarningBuilder {
 		DeprecatedWarningBuilder { links: vec![link.into()], ..self }
 	}
 
