@@ -89,7 +89,7 @@ impl FormattedWarning {
 ///     }
 /// };
 /// ```
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct DeprecatedWarningBuilder {
 	title: String,
 	index: Option<usize>,
