@@ -16,7 +16,7 @@ fn example_works() {
 		.new("my_macro::new()")
 		.help_link("https:://example.com")
 		.span(proc_macro2::Span::call_site())
-		.build();
+		.build_or_panic();
 	let got_tokens = quote!(#warning);
 
 	let want_tokens = quote!(
@@ -77,7 +77,7 @@ fn warning_debug_works() {
 		.new("my_macro::new()")
 		.help_link("https:://example.com")
 		.span(proc_macro2::Span::call_site())
-		.build();
+		.build_or_panic();
 	let _ = format!("{:?}", warning);
 }
 

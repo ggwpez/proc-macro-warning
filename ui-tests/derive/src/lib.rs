@@ -18,7 +18,7 @@ fn impl_dep(input: TokenStream, span: bool) -> TokenStream {
 	let input = syn::parse_macro_input!(input as syn::DeriveInput);
 
 	let warning = proc_macro_warning::Warning::new_deprecated("test").old("foo").new("bar");
-	let warning = if span { warning.span(input.span()) } else { warning }.build();
+	let warning = if span { warning.span(input.span()) } else { warning }.build_or_panic();
 
 	warning.into_token_stream().into()
 }

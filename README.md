@@ -30,7 +30,7 @@ let warning = Warning::new_deprecated("OldStuffUsed")
 	.new("my_macro::new()")
 	.help_link("https:://example.com")
 	.span(proc_macro2::Span::call_site())
-	.build();
+	.build_or_panic();
 
 // Use the warning in a proc macro
 let tokens = quote::quote!(#warning);
