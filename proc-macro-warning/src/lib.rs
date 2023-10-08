@@ -10,7 +10,7 @@
 use core::ops::Deref;
 use proc_macro2::Span;
 use quote::{quote_spanned, ToTokens};
-use syn::{spanned::Spanned, Ident};
+use syn::Ident;
 
 mod test;
 
@@ -158,12 +158,6 @@ impl DeprecatedWarningBuilder {
 	#[must_use]
 	pub fn span(self, span: Span) -> Self {
 		Self { span: Some(span), ..self }
-	}
-
-	/// Set the span of the warning to the span of `s`.
-	#[must_use]
-	pub fn spanned<S: Spanned>(self, spanned: S) -> Self {
-		Self { span: Some(spanned.span()), ..self }
 	}
 
 	/// Fallibly build a warning.
