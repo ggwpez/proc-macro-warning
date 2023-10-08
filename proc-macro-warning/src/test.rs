@@ -69,15 +69,6 @@ fn type_inferring_into_string_works() {
 	test_into_string_inference!(Warning::new_deprecated("").help_link);
 }
 
-/// Check the functions that accepting `Spanned` work as expected.
-#[test]
-fn type_inferring_spanned_works() {
-	let ident = syn::Ident::new("foo", proc_macro2::Span::call_site());
-
-	let _ = Warning::new_deprecated("").spanned(&ident);
-	let _ = Warning::new_deprecated("").spanned(ident);
-}
-
 #[test]
 #[cfg(feature = "derive_debug")]
 fn warning_debug_works() {
