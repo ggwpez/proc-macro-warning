@@ -76,3 +76,33 @@ fn type_inferring_spanned_works() {
 	let _ = Warning::new_deprecated("").spanned(&ident);
 	let _ = Warning::new_deprecated("").spanned(ident);
 }
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn warning_debug_works() {
+	let warning = Warning::new_deprecated("my_macro")
+		.old("my_macro()")
+		.new("my_macro::new()")
+		.help_link("https:://example.com")
+		.span(proc_macro2::Span::call_site())
+		.build();
+	let _ = format!("{:?}", warning);
+}
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn formatted_warning_debug_works() {
+	let warning = FormattedWarning::new_deprecated(
+		"my_macro",
+		"my_macro()",
+		proc_macro2::Span::call_site(),
+	);
+	let _ = format!("{:?}", warning);
+}
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn deprecated_warning_builder_debug_works() {
+	let builder = DeprecatedWarningBuilder::from_title("my_macro");
+	let _ = format!("{:?}", builder);
+}

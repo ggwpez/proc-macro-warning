@@ -17,6 +17,7 @@ mod test;
 
 /// Creates a compile-time warning for proc macro use. See [DeprecatedWarningBuilder] for usage.
 #[derive(Clone)]
+#[cfg_attr(feature = "derive_debug", derive(Debug))]
 pub enum Warning {
 	/// A *deprecation* warning that notifies users of outdated types and functions.
 	Deprecated {
@@ -37,6 +38,7 @@ pub enum Warning {
 ///
 /// Any content will be pasted as-is.
 #[derive(Clone)]
+#[cfg_attr(feature = "derive_debug", derive(Debug))]
 pub enum FormattedWarning {
 	/// A *deprecation* warning.
 	Deprecated {
@@ -98,6 +100,7 @@ impl FormattedWarning {
 /// };
 /// ```
 #[derive(Default, Clone)]
+#[cfg_attr(feature = "derive_debug", derive(Debug))]
 pub struct DeprecatedWarningBuilder {
 	title: String,
 	index: Option<usize>,
