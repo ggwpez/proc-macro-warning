@@ -7,11 +7,10 @@
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
 
-use syn::Ident;
 use core::ops::Deref;
 use proc_macro2::Span;
-use syn::spanned::Spanned;
 use quote::{quote_spanned, ToTokens};
+use syn::{spanned::Spanned, Ident};
 
 mod test;
 
@@ -221,7 +220,7 @@ impl Warning {
 			Some(i) => format!("{}_{}", name, i),
 			None => name.clone(),
 		};
-		
+
 		Ident::new(&name, span)
 	}
 }

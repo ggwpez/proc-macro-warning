@@ -47,7 +47,7 @@ fn type_inferring_into_string_works() {
 			let _ = $($warning)+ ("");
 			let _ = $($warning)+ (String::new());
 			let _ = $($warning)+ (&String::new());
-			
+
 			{
 				struct Custom;
 				impl Into<String> for Custom {
@@ -61,7 +61,7 @@ fn type_inferring_into_string_works() {
 	}
 
 	test_into_string_inference!(DeprecatedWarningBuilder::from_title);
-	
+
 	test_into_string_inference!(Warning::new_deprecated);
 	test_into_string_inference!(Warning::new_deprecated("").old);
 	test_into_string_inference!(Warning::new_deprecated("").new);
@@ -92,11 +92,8 @@ fn warning_debug_works() {
 #[test]
 #[cfg(feature = "derive_debug")]
 fn formatted_warning_debug_works() {
-	let warning = FormattedWarning::new_deprecated(
-		"my_macro",
-		"my_macro()",
-		proc_macro2::Span::call_site(),
-	);
+	let warning =
+		FormattedWarning::new_deprecated("my_macro", "my_macro()", proc_macro2::Span::call_site());
 	let _ = format!("{:?}", warning);
 }
 
