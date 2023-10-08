@@ -104,53 +104,53 @@ impl DeprecatedWarningBuilder {
 	///
 	/// The title must be unique for each warning.
 	#[must_use]
-	pub fn from_title<S: Into<String>>(title: S) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { title: title.into(), ..Default::default() }
+	pub fn from_title<S: Into<String>>(title: S) -> Self {
+		Self { title: title.into(), ..Default::default() }
 	}
 
 	/// Set an optional index in case that a warning appears multiple times.
 	///
 	/// Must be set if a warning appears multiple times.
 	#[must_use]
-	pub fn index<S: Into<usize>>(self, index: S) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { index: Some(index.into()), ..self }
+	pub fn index<S: Into<usize>>(self, index: S) -> Self {
+		Self { index: Some(index.into()), ..self }
 	}
 
 	/// The old *deprecated* way of doing something.
 	///
 	/// Should complete the sentence "It is deprecated to ...".
 	#[must_use]
-	pub fn old<S: Into<String>>(self, old: S) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { old: Some(old.into()), ..self }
+	pub fn old<S: Into<String>>(self, old: S) -> Self {
+		Self { old: Some(old.into()), ..self }
 	}
 
 	/// The *new* way of doing something.
 	///
 	/// Should complete the sentence "Please instead ...".
 	#[must_use]
-	pub fn new<S: Into<String>>(self, new: S) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { new: Some(new.into()), ..self }
+	pub fn new<S: Into<String>>(self, new: S) -> Self {
+		Self { new: Some(new.into()), ..self }
 	}
 
 	/// A help link for the user to explain the transition and justification.
 	#[must_use]
-	pub fn help_link<S: Into<String>>(self, link: S) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { links: vec![link.into()], ..self }
+	pub fn help_link<S: Into<String>>(self, link: S) -> Self {
+		Self { links: vec![link.into()], ..self }
 	}
 
 	/// Multiple help links for the user to explain the transition and justification.
 	#[must_use]
-	pub fn help_links(self, links: &[&str]) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { links: links.iter().map(|s| s.deref().into()).collect(), ..self }
+	pub fn help_links(self, links: &[&str]) -> Self {
+		Self { links: links.iter().map(|s| s.deref().into()).collect(), ..self }
 	}
 
 	/// The span of the warning.
 	#[must_use]
-	pub fn span(self, span: Span) -> DeprecatedWarningBuilder {
-		DeprecatedWarningBuilder { span: Some(span), ..self }
+	pub fn span(self, span: Span) -> Self {
+		Self { span: Some(span), ..self }
 	}
 
-	/// Build the warning.
+	/// Fallibly build a warning.
 	pub fn maybe_build(self) -> Result<Warning, String> {
 		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
@@ -178,7 +178,7 @@ impl Warning {
 	/// Sanitize the warning message.
 	fn final_deprecated_message(&self) -> String {
 		let (message, links) = match self {
-			Warning::Deprecated { message, links, .. } => (message, links),
+			Self::Deprecated { message, links, .. } => (message, links),
 		};
 
 		let lines = message.trim().lines().map(|line| line.trim_start());
@@ -197,7 +197,7 @@ impl Warning {
 	/// Sanitize the warning name.
 	fn final_deprecated_name(&self) -> syn::Ident {
 		let (index, name, span) = match self {
-			Warning::Deprecated { index, name, span, .. } => (*index, name, *span),
+			Self::Deprecated { index, name, span, .. } => (*index, name, *span),
 		};
 
 		let name = match index {
@@ -211,7 +211,7 @@ impl Warning {
 impl From<Warning> for FormattedWarning {
 	fn from(val: Warning) -> Self {
 		match val {
-			Warning::Deprecated { span, .. } => FormattedWarning::Deprecated {
+			Warning::Deprecated { span, .. } => Self::Deprecated {
 				name: val.final_deprecated_name(),
 				note: val.final_deprecated_message(),
 				span: Some(span),
@@ -230,7 +230,7 @@ impl ToTokens for Warning {
 impl ToTokens for FormattedWarning {
 	fn to_tokens(&self, stream: &mut proc_macro2::TokenStream) {
 		let (name, note, span) = match self {
-			FormattedWarning::Deprecated { name, note, span } => (name, note, span),
+			Self::Deprecated { name, note, span } => (name, note, span),
 		};
 		let span = span.unwrap_or_else(Span::call_site);
 
