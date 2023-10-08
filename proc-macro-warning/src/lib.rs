@@ -167,7 +167,6 @@ impl DeprecatedWarningBuilder {
 	}
 
 	/// Try to build the warning.
-	#[must_use]
 	pub fn try_build(self) -> Result<Warning, String> {
 		let span = self.span.unwrap_or_else(Span::call_site);
 		let title = self.title;
