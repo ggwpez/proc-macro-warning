@@ -38,3 +38,41 @@ fn example_works() {
 
 	assert_eq!(got_tokens.to_string(), want_tokens.to_string());
 }
+
+/// Check the functions that accepting `Into<String>` work as expected.
+#[test]
+fn type_inferring_into_string_works() {
+	macro_rules! test_into_string_inference {
+		($($warning:tt)+) => {
+			let _ = $($warning)+ ("");
+			let _ = $($warning)+ (String::new());
+			let _ = $($warning)+ (&String::new());
+			
+			{
+				struct Custom;
+				impl Into<String> for Custom {
+					fn into(self) -> String {
+						String::new()
+					}
+				}
+				let _ = $($warning)+ (Custom);
+			}
+		}
+	}
+
+	test_into_string_inference!(DeprecatedWarningBuilder::from_title);
+	
+	test_into_string_inference!(Warning::new_deprecated);
+	test_into_string_inference!(Warning::new_deprecated("").old);
+	test_into_string_inference!(Warning::new_deprecated("").new);
+	test_into_string_inference!(Warning::new_deprecated("").help_link);
+}
+
+/// Check the functions that accepting `Spanned` work as expected.
+#[test]
+fn type_inferring_spanned_works() {
+	let ident = syn::Ident::new("foo", proc_macro2::Span::call_site());
+
+	let _ = Warning::new_deprecated("").spanned(&ident);
+	let _ = Warning::new_deprecated("").spanned(ident);
+}
