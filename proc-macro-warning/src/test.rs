@@ -38,3 +38,69 @@ fn example_works() {
 
 	assert_eq!(got_tokens.to_string(), want_tokens.to_string());
 }
+
+/// Check the functions that accepting `Into<String>` work as expected.
+#[test]
+fn type_inferring_into_string_works() {
+	macro_rules! test_into_string_inference {
+		($($warning:tt)+) => {
+			let _ = $($warning)+ ("");
+			let _ = $($warning)+ (String::new());
+			let _ = $($warning)+ (&String::new());
+
+			#[allow(clippy::from_over_into)]
+			{
+				struct Custom;
+				impl Into<String> for Custom {
+					fn into(self) -> String {
+						String::new()
+					}
+				}
+				let _ = $($warning)+ (Custom);
+			}
+		}
+	}
+
+	test_into_string_inference!(DeprecatedWarningBuilder::from_title);
+
+	test_into_string_inference!(Warning::new_deprecated);
+	test_into_string_inference!(Warning::new_deprecated("").old);
+	test_into_string_inference!(Warning::new_deprecated("").new);
+	test_into_string_inference!(Warning::new_deprecated("").help_link);
+}
+
+/// Check the functions that accepting `Spanned` work as expected.
+#[test]
+fn type_inferring_spanned_works() {
+	let ident = syn::Ident::new("foo", proc_macro2::Span::call_site());
+
+	let _ = Warning::new_deprecated("").spanned(&ident);
+	let _ = Warning::new_deprecated("").spanned(ident);
+}
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn warning_debug_works() {
+	let warning = Warning::new_deprecated("my_macro")
+		.old("my_macro()")
+		.new("my_macro::new()")
+		.help_link("https:://example.com")
+		.span(proc_macro2::Span::call_site())
+		.build();
+	let _ = format!("{:?}", warning);
+}
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn formatted_warning_debug_works() {
+	let warning =
+		FormattedWarning::new_deprecated("my_macro", "my_macro()", proc_macro2::Span::call_site());
+	let _ = format!("{:?}", warning);
+}
+
+#[test]
+#[cfg(feature = "derive_debug")]
+fn deprecated_warning_builder_debug_works() {
+	let builder = DeprecatedWarningBuilder::from_title("my_macro");
+	let _ = format!("{:?}", builder);
+}

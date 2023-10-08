@@ -25,7 +25,7 @@ Building a warning is easy with the builder pattern.
 ```rust
 use proc_macro_warning::Warning;
 
-let warning = Warning::new_deprecated("my_macro")
+let warning = Warning::new_deprecated("OldStuffUsed")
 	.old("my_macro()")
 	.new("my_macro::new()")
 	.help_link("https:://example.com")
