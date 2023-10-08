@@ -48,6 +48,7 @@ fn type_inferring_into_string_works() {
 			let _ = $($warning)+ (String::new());
 			let _ = $($warning)+ (&String::new());
 
+			#[allow(clippy::from_over_into)]
 			{
 				struct Custom;
 				impl Into<String> for Custom {
