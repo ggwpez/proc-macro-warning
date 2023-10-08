@@ -84,7 +84,7 @@ impl FormattedWarning {
 ///     .help_link("https:://example.com")
 ///     // Normally you use the input span, but this is an example:
 ///     .span(proc_macro2::Span::call_site())
-///     .build();
+///     .build_or_panic();
 ///
 /// let mut warnings = vec![warning];
 /// // When adding more, you will need to build each with `.index`.
@@ -180,13 +180,15 @@ impl DeprecatedWarningBuilder {
 
 	/// Unwraps [`Self::maybe_build`] for convenience.
 	#[must_use]
+	#[deprecated(note = "Use `build_or_panic` instead; Will be removed after Q1 2024")]
 	pub fn build(self) -> Warning {
 		self.build_or_panic()
 	}
 
+	/// Build the warning or panic if it fails.
 	#[must_use]
 	pub fn build_or_panic(self) -> Warning {
-		self.maybe_build().expect("maybe_build failed")
+		self.try_build().expect("maybe_build failed")
 	}
 }
 
