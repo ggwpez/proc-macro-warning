@@ -8,8 +8,6 @@ description = "Emit warnings from inside proc macros."
 repository = "https://github.com/ggwpez/proc-macro-warning"
 readme.workspace = true
 
-build = "build.rs"
-
 [dependencies]
 proc-macro2 = { version = "1.0.68", default-features = false }
 quote = { version = "1.0.33", default-features = false }
