@@ -4,13 +4,11 @@ Info regarding crate maintenance.
 
 ## Publishing
 
-The README file of the `proc-macro-warning` crate is not found during normal `cargo publish` invocation.  
-To fix this, we use the `--allow-dirty` flag:
+The README file of the `proc-macro-warning` crate is not found during normal `cargo publish` invocation. We therefore always publish with the `publish` feature, that adapts the path for publishing.
 
 ```bash
-cp README.md proc-macro-warning/
 # Check that it works
-cargo publish -p proc-macro-warning --dry-run --allow-dirty
+cargo publish -p proc-macro-warning --features publish --dry-run
 # Actually do the publish
-cargo publish -p proc-macro-warning --allow-dirty
+cargo publish -p proc-macro-warning --features publish
 ```

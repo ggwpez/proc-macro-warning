@@ -20,3 +20,4 @@ derive = { path = "../ui-tests/derive" }
 default = ["derive_debug"]
 
 derive_debug = []
+publish = []

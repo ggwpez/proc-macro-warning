@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-#![doc = include_str!("../../README.md")]
+// Publishing builds the crate outside of the workspace and leads it to have a different root path:
+#![cfg_attr(feature = "publish", doc = include_str!("../README.md"))]
+#![cfg_attr(not(feature = "publish"), doc = include_str!("../../README.md"))]
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
 
