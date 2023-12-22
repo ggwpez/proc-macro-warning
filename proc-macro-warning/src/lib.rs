@@ -7,7 +7,6 @@
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
 
-use core::ops::Deref;
 use proc_macro2::Span;
 use quote::{quote_spanned, ToTokens};
 use syn::Ident;
@@ -151,7 +150,7 @@ impl DeprecatedWarningBuilder {
 	/// Multiple help links for the user to explain the transition and justification.
 	#[must_use]
 	pub fn help_links(self, links: &[&str]) -> Self {
-		Self { links: links.iter().map(|s| s.deref().into()).collect(), ..self }
+		Self { links: links.iter().map(|s| (*s).into()).collect(), ..self }
 	}
 
 	/// Set the span of the warning.

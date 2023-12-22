@@ -30,16 +30,16 @@ jobs:
       run: cargo check --all-targets --no-default-features # still broken --locked
 
     - name: Build
-      run: cargo build --all-targets --all-features --locked
+      run: cargo build --all-targets --features derive_debug --locked
 
     - name: Test
-      run: cargo test --locked --all-targets --all-features
+      run: cargo test --locked --all-targets --features derive_debug
 
     - name: Clippy
-      run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      run: cargo clippy --locked --all-targets --features derive_debug -- -D warnings
 
     - name: Documentation
-      run: cargo doc --locked --no-deps --all-features
+      run: cargo doc --locked --no-deps --features derive_debug
 
     - name: Doc Test
       run: cargo test --locked --doc

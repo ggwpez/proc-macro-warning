@@ -1,6 +1,6 @@
 [package]
 name = "proc-macro-warning"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "GPL-3.0 OR Apache-2.0"
 authors = ["Oliver Tale-Yazdi <oliver@tasty.limo>"]
@@ -8,12 +8,10 @@ description = "Emit warnings from inside proc macros."
 repository = "https://github.com/ggwpez/proc-macro-warning"
 readme.workspace = true
 
-build = "build.rs"
-
 [dependencies]
-proc-macro2 = { version = "1.0.68", default-features = false }
-quote = { version = "1.0.33", default-features = false }
-syn = { version = "2.0.38", default-features = false }
+proc-macro2 = { version = "1.0", default-features = false }
+quote = { version = "1.0", default-features = false }
+syn = { version = "2.0", default-features = false }
 
 [dev-dependencies]
 derive = { path = "../ui-tests/derive" }
@@ -22,3 +20,4 @@ derive = { path = "../ui-tests/derive" }
 default = ["derive_debug"]
 
 derive_debug = []
+publish = []
