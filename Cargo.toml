@@ -1,5 +1,5 @@
 [workspace]
-readme = "README.md"
+resolver = "2"
 
 members = [
 	"proc-macro-warning",
@@ -7,3 +7,6 @@ members = [
 	"ui-tests/derive",
 	"ui-tests/ui",
 ]
+
+[workspace.package]
+readme = "README.md"
