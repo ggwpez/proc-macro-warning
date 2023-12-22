@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: (GPL-3.0 or Apache-2.0)
  */
 
-#![doc = include_str!(env!("README_PATH"))]
+#![doc = include_str!("../README.md")]
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
 
