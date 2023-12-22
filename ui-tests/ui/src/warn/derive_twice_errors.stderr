@@ -18,6 +18,7 @@ error: use of deprecated constant `test::_w`:
   | ^^^^^^^^^^^^
   |
   = note: `-D deprecated` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(deprecated)]`
 
 error: use of deprecated constant `test::_w`:
                It is deprecated to foo.
