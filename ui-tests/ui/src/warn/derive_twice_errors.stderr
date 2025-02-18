@@ -1,10 +1,10 @@
 error[E0428]: the name `test` is defined multiple times
- --> src/warn/derive_twice_errors.rs:5:1
+ --> src/warn/derive_twice_errors.rs:8:1
   |
-2 | struct Test;
+4 | struct Test;
   | ------ previous definition of the value `test` here
 ...
-5 | struct Test2;
+8 | struct Test2;
   | ^^^^^^ `test` redefined here
   |
   = note: `test` must be defined only once in the value namespace of this module
@@ -12,9 +12,9 @@ error[E0428]: the name `test` is defined multiple times
 error: use of deprecated constant `test::_w`:
                It is deprecated to foo.
                Please instead bar.
- --> src/warn/derive_twice_errors.rs:2:1
+ --> src/warn/derive_twice_errors.rs:4:1
   |
-2 | struct Test;
+4 | struct Test;
   | ^^^^^^
   |
   = note: `-D deprecated` implied by `-D warnings`
@@ -23,7 +23,7 @@ error: use of deprecated constant `test::_w`:
 error: use of deprecated constant `test::_w`:
                It is deprecated to foo.
                Please instead bar.
- --> src/warn/derive_twice_errors.rs:5:1
+ --> src/warn/derive_twice_errors.rs:8:1
   |
-5 | struct Test2;
+8 | struct Test2;
   | ^^^^^^

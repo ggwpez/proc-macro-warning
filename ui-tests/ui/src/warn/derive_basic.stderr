@@ -1,19 +1,10 @@
 error: use of deprecated constant `test::_w`:
                It is deprecated to foo.
                Please instead bar.
- --> src/warn/derive_basic.rs:2:1
+ --> src/warn/derive_basic.rs:4:1
   |
-2 | struct Test;
+4 | struct Test;
   | ^^^^^^
   |
   = note: `-D deprecated` implied by `-D warnings`
   = help: to override `-D warnings` add `#[allow(deprecated)]`
-
-error: struct `Test` is never constructed
- --> src/warn/derive_basic.rs:2:8
-  |
-2 | struct Test;
-  |        ^^^^
-  |
-  = note: `-D dead-code` implied by `-D warnings`
-  = help: to override `-D warnings` add `#[allow(dead_code)]`
