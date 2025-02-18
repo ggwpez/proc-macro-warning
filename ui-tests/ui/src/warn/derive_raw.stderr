@@ -5,7 +5,7 @@ error: use of deprecated constant `VeryOldStuff::_w`:
  --> src/warn/derive_raw.rs:2:1
   |
 2 | struct Test;
-  | ^^^^^^^^^^^^
+  | ^^^^^^
   |
   = note: `-D deprecated` implied by `-D warnings`
   = help: to override `-D warnings` add `#[allow(deprecated)]`
