@@ -104,15 +104,19 @@ warning: use of deprecated constant `pallet::warnings::ConstantWeight_0::_w`:
      |                          
 ```
 
-## License
+### Versioning
 
-Licensed under either of at your own choice:
-
-* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or [gnu.org](https://www.gnu.org/licenses/gpl-3.0.txt>))
-* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or [apache.org](https://www.apache.org/licenses/LICENSE-2.0.txt>)).
+Versions are kept in sync with their respective stable Rust version. For example, version `1.84.1` is tested to be compatible with Rust stable `1.84.1`.
 
 ### Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
+
+## License
+
+Licensed under either of at your own choice:
+
+* GNU GENERAL PUBLIC LICENSE, Version 3 ([LICENSE-GPL3](./LICENSE-GPL3) or [gnu.org](https://www.gnu.org/licenses/gpl-3.0.txt>))
+* Apache License, Version 2.0 ([LICENSE-APACHE2](/LICENSE-APACHE2) or [apache.org](https://www.apache.org/licenses/LICENSE-2.0.txt>)).
