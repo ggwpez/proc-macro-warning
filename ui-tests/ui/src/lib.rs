@@ -3,7 +3,7 @@
 #[test]
 #[cfg(test)]
 fn ui_warm() {
-	std::env::set_var("RUSTFLAGS", "--deny warnings");
+	std::env::set_var("CARGO_ENCODED_RUSTFLAGS", "--deny=warnings");
 	let t = trybuild::TestCases::new();
 
 	t.compile_fail("src/warn/*.rs");
@@ -12,7 +12,7 @@ fn ui_warm() {
 #[test]
 #[cfg(test)]
 fn ui_no_warn() {
-	std::env::set_var("RUSTFLAGS", "--deny warnings");
+	std::env::set_var("CARGO_ENCODED_RUSTFLAGS", "--deny=warnings");
 	let t = trybuild::TestCases::new();
 
 	t.pass("src/no-warn/*.rs");
