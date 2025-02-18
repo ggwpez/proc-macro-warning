@@ -9,3 +9,12 @@ error: use of deprecated constant `VeryOldStuff::_w`:
   |
   = note: `-D deprecated` implied by `-D warnings`
   = help: to override `-D warnings` add `#[allow(deprecated)]`
+
+error: struct `Test` is never constructed
+ --> src/warn/derive_raw.rs:2:8
+  |
+2 | struct Test;
+  |        ^^^^
+  |
+  = note: `-D dead-code` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(dead_code)]`
